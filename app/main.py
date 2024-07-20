@@ -1,4 +1,6 @@
 import os
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
 from dotenv import load_dotenv
 
 from langchain.text_splitter import CharacterTextSplitter
@@ -12,9 +14,16 @@ from langchain_core.output_parsers import StrOutputParser
 
 load_dotenv()
 
+# Initialize FastAPI app
+app = FastAPI()
+
+# Define data model for incoming queries
+class QueryModel(BaseModel):
+    customer: str
+
+# File path and read content
 file_path = "CustomerData.txt"
 
-# Read the content of the file
 with open(file_path, 'r') as f:
     file_text = f.read()
 
@@ -34,6 +43,7 @@ file_texts = [
     for i, chunked_text in enumerate(texts)
 ]
 
+# Initialize embeddings and vector store
 embeddings = HuggingFaceEmbeddings()
 
 vector_store = FAISS.from_documents(
@@ -41,6 +51,7 @@ vector_store = FAISS.from_documents(
     embedding=embeddings
 )
 
+# Initialize LLM endpoint
 llm = OctoAIEndpoint(
     model="meta-llama-3-8b-instruct",
     max_tokens=1024,
@@ -49,39 +60,33 @@ llm = OctoAIEndpoint(
     top_p=0.9,
 )
 
+# Initialize retriever
 retriever = vector_store.as_retriever()
 
-template = """You are an assistant for helping us make sales for our tires. Use the following pieces of retrieved context to give us the best response to our customers to ensure we can sell them new tires.
-Question: {question} 
+# Define the prompt template
+template = """Welcome to WolfTires! Your role as a salesperson is crucial for driving sales and maximizing conversions. 
+Focus on increasing our call-to-sale conversion rate. Please answer customer queries as
+a high performing salesperson and limit your responses to 2 sentences. Don't generate a whole conversation.
+
+Customer: {customer} 
 Context: {context} 
 Answer:"""
 
 prompt = ChatPromptTemplate.from_template(template)
 
+# Create the chain
 chain = (
-    {"context": retriever, "question": RunnablePassthrough()}
+    {"context": retriever, "customer": RunnablePassthrough()}
     | prompt
     | llm
     | StrOutputParser()
 )
 
-# Example query
-#userInput = input()
-
-#while(userInput != exit):
-   # response = chain.invoke(userInput)
-    #print(response)
-    
-while True:
-    userInput = input()
-
-    if userInput == 'exit':   
-        break
-    else:
-        response = chain.invoke(userInput)
-        print(response)
-
-    if userInput == 'exit':
-        break
-
-
+# Define the FastAPI endpoint
+@app.post("/ask/")
+def ask_question(query: QueryModel):
+    try:
+        response = chain.invoke(query.customer)
+        return {"WolfAI": response}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
