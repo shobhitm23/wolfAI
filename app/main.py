@@ -42,19 +42,20 @@ vector_store = FAISS.from_documents(
 )
 
 llm = OctoAIEndpoint(
-        model="meta-llama-3-8b-instruct",
-        max_tokens=1024,
-        presence_penalty=0,
-        temperature=0.1,
-        top_p=0.9,
+    model="meta-llama-3-8b-instruct",
+    max_tokens=1024,
+    presence_penalty=0,
+    temperature=0.1,
+    top_p=0.9,
 )
 
 retriever = vector_store.as_retriever()
 
-template="""You are an assistant for helping us make sales for our tires. Use the following pieces of retrieved context to give us the best response to our customers to ensure we can sell them new tires.
+template = """You are an assistant for helping us make sales for our tires. Use the following pieces of retrieved context to give us the best response to our customers to ensure we can sell them new tires.
 Question: {question} 
 Context: {context} 
 Answer:"""
+
 prompt = ChatPromptTemplate.from_template(template)
 
 chain = (
@@ -64,19 +65,6 @@ chain = (
     | StrOutputParser()
 )
 
-chain.invoke("I just got new tires. Why do I need new tires?")
-
-# template="""You are a literary critic. You are given some context and asked to answer questions based on only that context.
-# Question: {question} 
-# Context: {context} 
-# Answer:"""
-# lit_crit_prompt = ChatPromptTemplate.from_template(template)
-
-# lcchain = (
-#     {"context": retriever, "question": RunnablePassthrough()}
-#     | lit_crit_prompt
-#     | llm
-#     | StrOutputParser()
-# )
-
-# pprint(lcchain.invoke("What is the best thing about Luke's Father's story line?"))
+# Example query
+response = chain.invoke("I just got new tires. Why do I need new tires?")
+print(response)
