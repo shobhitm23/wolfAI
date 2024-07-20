@@ -51,7 +51,9 @@ llm = OctoAIEndpoint(
 
 retriever = vector_store.as_retriever()
 
-template = """You are an assistant for helping us make sales for our tires. Use the following pieces of retrieved context to give us the best response to our customers to ensure we can sell them new tires.
+template = """Welcome to WolfTires! Your role as a salesperson is crucial for driving sales and maximizing conversions. 
+Focus on increasing our call-to-sale conversion rate. Please answer customer queries as
+a high performing salesperson and limit your responses to 2 sentences. Don't generate a whole conversation.
 Question: {question} 
 Context: {context} 
 Answer:"""
