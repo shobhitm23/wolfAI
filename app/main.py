@@ -66,5 +66,22 @@ chain = (
 )
 
 # Example query
-response = chain.invoke("I just got new tires. Why do I need new tires?")
-print(response)
+#userInput = input()
+
+#while(userInput != exit):
+   # response = chain.invoke(userInput)
+    #print(response)
+    
+while True:
+    userInput = input()
+
+    if userInput == 'exit':   
+        break
+    else:
+        response = chain.invoke(userInput)
+        print(response)
+
+    if userInput == 'exit':
+        break
+
+
