@@ -12,8 +12,7 @@ from pprint import pprint
 
 load_dotenv()
 
-OCTOAI_API_TOKEN = os.getenv("OCTO_AI_TOKEN")
-
+# OCTOAI_API_TOKEN = os.getenv("OCTO_AI_TOKEN")
 from langchain_text_splitters import RecursiveCharacterTextSplitter, HTMLHeaderTextSplitter
 
 url = "https://en.wikipedia.org/wiki/Star_Wars"
@@ -46,8 +45,7 @@ llm = OctoAIEndpoint(
         max_tokens=1024,
         presence_penalty=0,
         temperature=0.1,
-        top_p=0.9,
-        octoai_api_token = OCTOAI_API_TOKEN
+        top_p=0.9
     )
 embeddings = OctoAIEmbeddings(endpoint_url="https://text.octoai.run/v1/")
 
