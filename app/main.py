@@ -4,11 +4,12 @@ from dotenv import load_dotenv
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.schema import Document
 from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain.vectorstores import FAISS
+from langchain_community.vectorstores import FAISS
 from langchain_community.llms.octoai_endpoint import OctoAIEndpoint
 from langchain.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
+from langchain_huggingface import HuggingFaceEmbeddings
 
 load_dotenv()
 
